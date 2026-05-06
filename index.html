@@ -27,6 +27,8 @@
   --ruby-bg: rgba(139,26,46,0.08);
   --sky: #1a4a7a;
   --sky2: #2d6fb5;
+  --amber: #d97706;
+  --amber-bg: rgba(217,119,6,0.1);
   --r: 6px;
   --rl: 12px;
   --shadow: 0 2px 12px rgba(13,17,23,0.08);
@@ -192,17 +194,26 @@ body {
 /* ── PAGE TABS ── */
 .page-tabs {
   display:flex; gap:0; border-bottom:1px solid var(--fog);
-  margin-bottom:32px;
+  margin-bottom:32px; position:relative;
 }
 .page-tab {
   padding:10px 20px; border:none; background:transparent;
   font-family:'DM Sans',sans-serif; font-size:14px;
   color:var(--stone); cursor:pointer;
   border-bottom:2px solid transparent; margin-bottom:-1px;
-  transition:all .2s;
+  transition:all .2s; position:relative;
 }
 .page-tab.active { color:var(--ink); border-bottom-color:var(--gold); font-weight:500; }
 .page-tab:hover:not(.active) { color:var(--ink2); }
+
+/* Tab badge */
+.tab-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--ruby2); color:white;
+  font-size:9px; font-weight:700;
+  margin-left:5px; vertical-align:middle;
+}
 
 /* ── PAGE PANELS ── */
 .page-panel { display:none; }
@@ -268,6 +279,15 @@ body {
   font-family:'DM Serif Display',serif;
   font-size:56px; color:var(--gold2); line-height:1;
   margin-bottom:4px;
+  transition: transform .3s;
+}
+.points-hero-val.pop {
+  animation: numPop .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes numPop {
+  0% { transform:scale(1); }
+  50% { transform:scale(1.15); }
+  100% { transform:scale(1); }
 }
 .points-hero-sub { font-size:14px; color:var(--stone); }
 .points-rank-badge {
@@ -282,16 +302,45 @@ body {
 }
 .rank-label { font-size:11px; color:var(--stone); margin-top:2px; }
 
+/* ── LEVEL PROGRESS ── */
+.level-row {
+  display:flex; align-items:center; gap:12px;
+  margin-top:16px; padding-top:16px;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+.level-badge {
+  font-size:11px; font-weight:700; padding:4px 10px;
+  border-radius:20px; white-space:nowrap; flex-shrink:0;
+}
+.level-track {
+  flex:1; height:6px; background:rgba(255,255,255,0.1);
+  border-radius:3px; overflow:hidden;
+}
+.level-bar {
+  height:100%;
+  background:linear-gradient(90deg, var(--gold), var(--gold2));
+  border-radius:3px;
+  transition:width .8s cubic-bezier(.34,1.56,.64,1);
+}
+.level-next { font-size:12px; color:var(--stone); white-space:nowrap; }
+
 /* ── TASK LIST ── */
 .task-card {
   background:var(--white); border:1px solid var(--fog);
   border-radius:var(--rl); padding:18px 20px;
   display:flex; align-items:center; gap:16px;
-  margin-bottom:10px; cursor:pointer;
+  margin-bottom:10px;
   transition:box-shadow .2s, border-color .2s;
   box-shadow:var(--shadow);
 }
-.task-card:hover { box-shadow:var(--shadow-md); border-color:var(--mist); }
+.task-card.clickable { cursor:pointer; }
+.task-card.clickable:hover { box-shadow:var(--shadow-md); border-color:var(--mist); }
+.task-card.task-glow { animation:taskGlow .6s ease-out; }
+@keyframes taskGlow {
+  0% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  40% { box-shadow: 0 0 0 10px rgba(34,197,94,.25); }
+  100% { box-shadow: var(--shadow); }
+}
 .task-icon {
   width:44px; height:44px; border-radius:10px;
   display:flex; align-items:center; justify-content:center;
@@ -313,9 +362,29 @@ body {
   font-size:11px; font-weight:600; padding:4px 10px;
   border-radius:20px; white-space:nowrap;
 }
-.task-status.done { background:var(--teal-bg); color:var(--teal); }
-.task-status.pending { background:var(--gold-bg); color:var(--gold); }
-.task-status.locked { background:var(--fog); color:var(--stone); }
+.task-status.done    { background:var(--teal-bg); color:var(--teal); }
+.task-status.pending { background:var(--amber-bg); color:var(--amber); }
+.task-status.review  { background:rgba(45,111,181,0.1); color:var(--sky2); }
+.task-status.locked  { background:var(--fog); color:var(--stone); }
+
+/* ── APPROVAL CARDS ── */
+.approval-card {
+  background:var(--white); border:1px solid var(--fog);
+  border-radius:var(--rl); padding:18px 20px;
+  margin-bottom:10px; box-shadow:var(--shadow);
+}
+.approval-card .ac-header {
+  display:flex; align-items:center; gap:14px; margin-bottom:12px;
+}
+.approval-card .ac-icon {
+  width:44px; height:44px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; flex-shrink:0; background:var(--amber-bg);
+}
+.approval-card .ac-info { flex:1; }
+.approval-card .ac-name { font-weight:600; font-size:15px; }
+.approval-card .ac-meta { font-size:13px; color:var(--stone); margin-top:2px; }
+.approval-card .ac-actions { display:flex; gap:8px; }
 
 /* ── LEADERBOARD ── */
 .lb-table {
@@ -420,7 +489,7 @@ body {
 .btn-gold {
   border:none; background:var(--gold); color:var(--white);
 }
-.btn-gold:hover { background:var(--gold2); }
+.btn-gold:hover { background:var(--gold2); color:var(--ink); }
 .btn-sm { padding:6px 12px; font-size:12px; }
 .btn-teal {
   border:none; background:var(--teal); color:var(--white);
@@ -431,6 +500,15 @@ body {
   border:1px solid rgba(139,26,46,0.2);
 }
 .btn-ruby:hover { background:var(--ruby-bg); }
+.btn-approve {
+  border:none; background:var(--teal-bg); color:var(--teal);
+  border:1px solid rgba(15,110,114,0.2);
+}
+.btn-approve:hover { background:var(--teal); color:var(--white); }
+.btn-reject {
+  border:1px solid rgba(139,26,46,0.2); background:transparent; color:var(--ruby2);
+}
+.btn-reject:hover { background:var(--ruby-bg); }
 
 /* ── MODAL ── */
 .modal-backdrop {
@@ -497,6 +575,7 @@ body {
 .chip-teal { background:var(--teal-bg); color:var(--teal); }
 .chip-ruby { background:var(--ruby-bg); color:var(--ruby2); }
 .chip-sky  { background:rgba(26,74,122,0.08); color:var(--sky2); }
+.chip-amber { background:var(--amber-bg); color:var(--amber); }
 
 /* ── SECTION DIVIDER ── */
 .sdiv {
@@ -506,6 +585,61 @@ body {
 .empty-state {
   text-align:center; padding:40px;
   color:var(--stone); font-size:14px;
+}
+
+/* ── ANIMATIONS ── */
+.star-particle {
+  position:fixed; pointer-events:none;
+  font-size:18px; z-index:9999;
+  animation:starFly var(--dur,.8s) ease-out forwards;
+}
+@keyframes starFly {
+  0%   { transform:translate(0,0) scale(1); opacity:1; }
+  100% { transform:translate(var(--tx,0px), var(--ty,-80px)) scale(0); opacity:0; }
+}
+
+.confetti-piece {
+  position:fixed; width:8px; height:8px;
+  pointer-events:none; z-index:9999;
+  border-radius:2px;
+  animation:confettiFall var(--dur,1.4s) ease-in forwards;
+}
+@keyframes confettiFall {
+  0%   { transform:translate(0,0) rotate(0deg); opacity:1; }
+  100% { transform:translate(var(--tx,0px), 100vh) rotate(var(--rot,360deg)); opacity:0; }
+}
+
+/* ── MILESTONE OVERLAY ── */
+#milestone-overlay {
+  position:fixed; inset:0;
+  background:rgba(13,17,23,0.4);
+  display:flex; align-items:center; justify-content:center;
+  z-index:9998; pointer-events:none;
+  opacity:0; transition:opacity .3s;
+}
+#milestone-overlay.show { opacity:1; }
+.milestone-card {
+  background:var(--white); border-radius:20px;
+  padding:32px 40px; text-align:center;
+  box-shadow:0 20px 60px rgba(13,17,23,0.3);
+  transform:scale(.8);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+}
+#milestone-overlay.show .milestone-card { transform:scale(1); }
+.ms-emoji { font-size:56px; margin-bottom:12px; }
+.ms-title { font-family:'DM Serif Display',serif; font-size:22px; color:var(--ink); margin-bottom:6px; }
+.ms-sub { font-size:14px; color:var(--stone); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .main { padding:16px; }
+  .topnav { padding:0 16px; }
+  .page-tab { padding:10px 12px; font-size:13px; }
+  .points-hero-val { font-size:44px; }
+  .points-rank-badge { position:static; margin-top:12px; display:inline-block; }
+  .stat-grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .lb-bar-wrap { display:none; }
+  .modal-box { padding:24px; }
 }
 </style>
 </head>
@@ -535,13 +669,12 @@ body {
       <input type="password" id="login-pw" placeholder="••••••••" value="1234">
     </div>
     <button class="btn-primary" onclick="doLogin()">登入系統</button>
-    <div class="login-hint">示範帳號：M001 / 密碼：1234　｜　HR001 / 密碼：hr01</div>
+    <div class="login-hint">學員：M001 / 1234　｜　人資：HR001 / hr01</div>
   </div>
 </div>
 
 <!-- ═══ APP ═══ -->
 <div id="app">
-  <!-- TOP NAV -->
   <nav class="topnav">
     <div class="nav-brand">領 <span>積</span></div>
     <div class="nav-user">
@@ -554,7 +687,6 @@ body {
     </div>
   </nav>
 
-  <!-- MAIN -->
   <div class="main">
 
     <!-- ── MEMBER PAGES ── -->
@@ -576,6 +708,13 @@ body {
             <div class="rank-num" id="m-rank">—</div>
             <div class="rank-label">目前排名</div>
           </div>
+          <div class="level-row">
+            <span class="level-badge" id="m-level-badge">—</span>
+            <div class="level-track">
+              <div class="level-bar" id="m-level-bar" style="width:0%"></div>
+            </div>
+            <span class="level-next" id="m-level-next">—</span>
+          </div>
         </div>
         <div class="stat-grid">
           <div class="stat-card gold">
@@ -589,9 +728,9 @@ body {
             <div class="stat-unit">點</div>
           </div>
           <div class="stat-card sky">
-            <div class="stat-label">參與期數</div>
-            <div class="stat-val">3</div>
-            <div class="stat-unit">梯次</div>
+            <div class="stat-label">審核中</div>
+            <div class="stat-val" id="m-pending-count">0</div>
+            <div class="stat-unit">項申請</div>
           </div>
           <div class="stat-card ruby">
             <div class="stat-label">距下一級</div>
@@ -614,7 +753,7 @@ body {
         <div class="section-header">
           <div>
             <div class="section-title">任務挑戰</div>
-            <div class="section-sub">完成任務即可獲得積分</div>
+            <div class="section-sub">點擊「申請完成」，待人資審核後積分入帳</div>
           </div>
         </div>
         <div id="m-task-list"></div>
@@ -650,6 +789,7 @@ body {
         <button class="page-tab" onclick="switchTab('admin','members')">學員管理</button>
         <button class="page-tab" onclick="switchTab('admin','tasks')">任務設定</button>
         <button class="page-tab" onclick="switchTab('admin','adjust')">手動調整</button>
+        <button class="page-tab" id="a-tab-review" onclick="switchTab('admin','review')">審核申請<span class="tab-badge" id="review-badge" style="display:none">0</span></button>
       </div>
 
       <!-- dashboard -->
@@ -706,7 +846,7 @@ body {
                 <th>部門</th>
                 <th>職稱</th>
                 <th>積分</th>
-                <th>狀態</th>
+                <th>等級</th>
                 <th></th>
               </tr>
             </thead>
@@ -771,6 +911,17 @@ body {
           <button class="btn btn-gold" style="width:100%;padding:13px;" onclick="doAdjust()">確認調整</button>
         </div>
       </div>
+
+      <!-- review -->
+      <div id="a-review" class="page-panel">
+        <div class="section-header">
+          <div>
+            <div class="section-title">審核申請</div>
+            <div class="section-sub">學員提交的任務完成申請</div>
+          </div>
+        </div>
+        <div id="a-approval-list"></div>
+      </div>
     </div>
 
   </div><!-- /main -->
@@ -786,6 +937,7 @@ body {
     <div class="form-field"><label>部門</label><input type="text" id="nm-dept" placeholder="業務部"></div>
     <div class="form-field"><label>職稱</label><input type="text" id="nm-title" placeholder="區域主管"></div>
     <div class="form-field"><label>員工編號</label><input type="text" id="nm-id" placeholder="M010"></div>
+    <div class="form-field"><label>登入密碼</label><input type="password" id="nm-pw" placeholder="預設 1234"></div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal('add-member')">取消</button>
       <button class="btn btn-gold" onclick="addMember()">新增</button>
@@ -817,41 +969,79 @@ body {
   </div>
 </div>
 
-<!-- Complete Task Confirm -->
-<div class="modal-backdrop" id="modal-complete-task">
+<!-- Apply Task -->
+<div class="modal-backdrop" id="modal-apply-task">
   <div class="modal-box">
-    <div class="modal-title" id="ct-title">完成任務確認</div>
-    <div class="modal-sub" id="ct-sub">完成後將獲得積分</div>
-    <div style="background:var(--gold-bg);border:1px solid rgba(184,134,11,0.2);border-radius:10px;padding:16px;text-align:center;margin-bottom:4px;">
-      <div style="font-size:12px;color:var(--stone);margin-bottom:4px;">獲得積分</div>
-      <div style="font-family:'DM Serif Display',serif;font-size:40px;color:var(--gold);" id="ct-pts">0</div>
+    <div class="modal-title" id="at-title">申請完成任務</div>
+    <div class="modal-sub" id="at-sub">提交後由人資審核，審核通過後積分入帳</div>
+    <div style="background:var(--gold-bg);border:1px solid rgba(184,134,11,0.2);border-radius:10px;padding:16px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:12px;color:var(--stone);margin-bottom:4px;">可獲得積分</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:40px;color:var(--gold);" id="at-pts">0</div>
+    </div>
+    <div class="form-field">
+      <label>補充說明（選填）</label>
+      <input type="text" id="at-note" placeholder="可說明完成情況…">
     </div>
     <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal('complete-task')">取消</button>
-      <button class="btn btn-gold" onclick="confirmCompleteTask()">確認完成</button>
+      <button class="btn btn-outline" onclick="closeModal('apply-task')">取消</button>
+      <button class="btn btn-gold" onclick="confirmApplyTask()">送出申請</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- Milestone overlay -->
+<div id="milestone-overlay">
+  <div class="milestone-card">
+    <div class="ms-emoji" id="ms-emoji">🎉</div>
+    <div class="ms-title" id="ms-title">太棒了！</div>
+    <div class="ms-sub" id="ms-sub"></div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════
-//  DATA
+//  CONSTANTS
 // ═══════════════════════════════
-let state = {
+const STORAGE_KEY = 'leadership_points_v2';
+
+const LEVELS = [
+  { name:'新星', min:0,    color:'#8a9ab0', icon:'🌱' },
+  { name:'白銀', min:200,  color:'#94a3b8', icon:'⭐' },
+  { name:'黃金', min:400,  color:'#b8860b', icon:'🥇' },
+  { name:'白金', min:600,  color:'#0f6e72', icon:'💎' },
+  { name:'鑽石', min:900,  color:'#1a4a7a', icon:'🔮' },
+  { name:'大師', min:1200, color:'#8b1a2e', icon:'👑' },
+];
+
+function getLevelInfo(pts) {
+  let cur = LEVELS[0];
+  for (const lv of LEVELS) { if (pts >= lv.min) cur = lv; else break; }
+  const idx = LEVELS.indexOf(cur);
+  const next = LEVELS[idx + 1] || null;
+  const pct = next
+    ? Math.min(Math.round((pts - cur.min) / (next.min - cur.min) * 100), 100)
+    : 100;
+  return { cur, next, pct };
+}
+
+// ═══════════════════════════════
+//  STATE
+// ═══════════════════════════════
+const DEFAULT_STATE = {
   currentUser: null,
   pendingTaskId: null,
 
   members: [
-    { id:'M001', name:'陳志遠', dept:'業務部', title:'業務主管', pts:540, active:true },
-    { id:'M002', name:'林美玲', dept:'行銷部', title:'品牌主管', pts:480, active:true },
-    { id:'M003', name:'張文豪', dept:'營運部', title:'運營主管', pts:430, active:true },
-    { id:'M004', name:'黃佳慧', dept:'人資部', title:'人力資源主管', pts:390, active:true },
-    { id:'M005', name:'王建國', dept:'財務部', title:'財務主管', pts:350, active:true },
-    { id:'M006', name:'李淑芬', dept:'研發部', title:'技術主管', pts:320, active:true },
-    { id:'M007', name:'吳明達', dept:'業務部', title:'業務主管', pts:280, active:true },
-    { id:'M008', name:'鄭雅婷', dept:'客服部', title:'客服主管', pts:240, active:true },
+    { id:'M001', name:'陳志遠', dept:'業務部',  title:'業務主管',     pts:540, active:true, pw:'1234' },
+    { id:'M002', name:'林美玲', dept:'行銷部',  title:'品牌主管',     pts:480, active:true, pw:'1234' },
+    { id:'M003', name:'張文豪', dept:'營運部',  title:'運營主管',     pts:430, active:true, pw:'1234' },
+    { id:'M004', name:'黃佳慧', dept:'人資部',  title:'人力資源主管', pts:390, active:true, pw:'1234' },
+    { id:'M005', name:'王建國', dept:'財務部',  title:'財務主管',     pts:350, active:true, pw:'1234' },
+    { id:'M006', name:'李淑芬', dept:'研發部',  title:'技術主管',     pts:320, active:true, pw:'1234' },
+    { id:'M007', name:'吳明達', dept:'業務部',  title:'業務主管',     pts:280, active:true, pw:'1234' },
+    { id:'M008', name:'鄭雅婷', dept:'客服部',  title:'客服主管',     pts:240, active:true, pw:'1234' },
   ],
 
   admins: [
@@ -859,36 +1049,60 @@ let state = {
   ],
 
   tasks: [
-    { id:'T001', name:'課前預習作業繳交', cat:'作業繳交', pts:30, desc:'每梯次課前完成預習問卷', icon:'📝', color:'gold' },
-    { id:'T002', name:'課堂全勤出席', cat:'課堂參與', pts:50, desc:'全程參與當梯次課程', icon:'✅', color:'teal' },
-    { id:'T003', name:'課堂分組討論發言', cat:'課堂參與', pts:20, desc:'積極參與小組討論並分享觀點', icon:'💬', color:'gold' },
-    { id:'T004', name:'案例分析報告', cat:'作業繳交', pts:60, desc:'完成指定案例分析並提交', icon:'📊', color:'gold' },
-    { id:'T005', name:'跨部門觀摩見習', cat:'實踐挑戰', pts:80, desc:'安排至少一次跨部門觀摩', icon:'🔍', color:'teal' },
-    { id:'T006', name:'一對一教練對話', cat:'實踐挑戰', pts:40, desc:'與直屬部屬進行教練式對話', icon:'🤝', color:'ruby' },
-    { id:'T007', name:'課後心得分享', cat:'作業繳交', pts:25, desc:'撰寫學習心得並分享至群組', icon:'✍️', color:'gold' },
-    { id:'T008', name:'優秀學員推薦', cat:'特殊貢獻', pts:100, desc:'被同儕推薦為本梯次優秀學員', icon:'⭐', color:'ruby' },
+    { id:'T001', name:'課前預習作業繳交',  cat:'作業繳交', pts:30,  desc:'每梯次課前完成預習問卷',     icon:'📝', color:'gold' },
+    { id:'T002', name:'課堂全勤出席',      cat:'課堂參與', pts:50,  desc:'全程參與當梯次課程',         icon:'✅', color:'teal' },
+    { id:'T003', name:'課堂分組討論發言',  cat:'課堂參與', pts:20,  desc:'積極參與小組討論並分享觀點', icon:'💬', color:'gold' },
+    { id:'T004', name:'案例分析報告',      cat:'作業繳交', pts:60,  desc:'完成指定案例分析並提交',     icon:'📊', color:'gold' },
+    { id:'T005', name:'跨部門觀摩見習',    cat:'實踐挑戰', pts:80,  desc:'安排至少一次跨部門觀摩',     icon:'🔍', color:'teal' },
+    { id:'T006', name:'一對一教練對話',    cat:'實踐挑戰', pts:40,  desc:'與直屬部屬進行教練式對話',   icon:'🤝', color:'ruby' },
+    { id:'T007', name:'課後心得分享',      cat:'作業繳交', pts:25,  desc:'撰寫學習心得並分享至群組',   icon:'✍️', color:'gold' },
+    { id:'T008', name:'優秀學員推薦',      cat:'特殊貢獻', pts:100, desc:'被同儕推薦為本梯次優秀學員', icon:'⭐', color:'ruby' },
   ],
 
   history: [
-    { memberId:'M001', type:'earn', taskId:'T002', taskName:'課堂全勤出席', pts:50, date:'2026-04-15', note:'' },
-    { memberId:'M001', type:'earn', taskId:'T001', taskName:'課前預習作業繳交', pts:30, date:'2026-04-10', note:'' },
-    { memberId:'M001', type:'earn', taskId:'T003', taskName:'課堂分組討論發言', pts:20, date:'2026-04-15', note:'' },
-    { memberId:'M001', type:'earn', taskId:'T004', taskName:'案例分析報告', pts:60, date:'2026-04-20', note:'' },
-    { memberId:'M001', type:'deduct', taskId:null, taskName:'遲交作業扣分', pts:20, date:'2026-04-22', note:'遲交一週' },
-    { memberId:'M001', type:'earn', taskId:'T005', taskName:'跨部門觀摩見習', pts:80, date:'2026-04-28', note:'' },
-    { memberId:'M001', type:'earn', taskId:'T006', taskName:'一對一教練對話', pts:40, date:'2026-05-02', note:'' },
-    { memberId:'M001', type:'earn', taskId:'T007', taskName:'課後心得分享', pts:25, date:'2026-05-03', note:'' },
-    { memberId:'M001', type:'deduct', taskId:null, taskName:'手動調整', pts:25, date:'2026-05-05', note:'系統補正' },
-    { memberId:'M001', type:'earn', taskId:null, taskName:'人資特別加分', pts:80, date:'2026-05-05', note:'表現卓越' },
-  ]
+    { memberId:'M001', type:'earn',   taskId:'T002', taskName:'課堂全勤出席',    pts:50, date:'2026-04-15', note:'' },
+    { memberId:'M001', type:'earn',   taskId:'T001', taskName:'課前預習作業繳交', pts:30, date:'2026-04-10', note:'' },
+    { memberId:'M001', type:'earn',   taskId:'T003', taskName:'課堂分組討論發言', pts:20, date:'2026-04-15', note:'' },
+    { memberId:'M001', type:'earn',   taskId:'T004', taskName:'案例分析報告',    pts:60, date:'2026-04-20', note:'' },
+    { memberId:'M001', type:'deduct', taskId:null,   taskName:'遲交作業扣分',    pts:20, date:'2026-04-22', note:'遲交一週' },
+    { memberId:'M001', type:'earn',   taskId:'T005', taskName:'跨部門觀摩見習',  pts:80, date:'2026-04-28', note:'' },
+    { memberId:'M001', type:'earn',   taskId:'T006', taskName:'一對一教練對話',  pts:40, date:'2026-05-02', note:'' },
+    { memberId:'M001', type:'earn',   taskId:'T007', taskName:'課後心得分享',    pts:25, date:'2026-05-03', note:'' },
+    { memberId:'M001', type:'deduct', taskId:null,   taskName:'手動調整',        pts:25, date:'2026-05-05', note:'系統補正' },
+    { memberId:'M001', type:'earn',   taskId:null,   taskName:'人資特別加分',    pts:80, date:'2026-05-05', note:'表現卓越' },
+  ],
+
+  pendingApprovals: [],
 };
 
-// computed done tasks for member
-function memberDoneTasks(memberId) {
-  return state.history
-    .filter(h => h.memberId === memberId && h.type === 'earn' && h.taskId)
-    .map(h => h.taskId);
+let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+// ── localStorage ──
+function saveState() {
+  const toSave = {
+    members: state.members,
+    admins: state.admins,
+    tasks: state.tasks,
+    history: state.history,
+    pendingApprovals: state.pendingApprovals,
+  };
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch(e) {}
 }
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved.members)          state.members          = saved.members;
+    if (saved.admins)           state.admins           = saved.admins;
+    if (saved.tasks)            state.tasks            = saved.tasks;
+    if (saved.history)          state.history          = saved.history;
+    if (saved.pendingApprovals) state.pendingApprovals = saved.pendingApprovals;
+  } catch(e) {}
+}
+
+loadFromStorage();
 
 // ═══════════════════════════════
 //  AUTH
@@ -908,7 +1122,7 @@ function doLogin() {
   const pw = document.getElementById('login-pw').value.trim();
 
   if (selectedRole === 'member') {
-    const m = state.members.find(x => x.id === id && pw === '1234');
+    const m = state.members.find(x => x.id === id && x.pw === pw);
     if (!m) { toast('帳號或密碼錯誤'); return; }
     state.currentUser = { ...m, role:'member' };
   } else {
@@ -949,10 +1163,9 @@ function initApp() {
 //  TABS
 // ═══════════════════════════════
 function switchTab(area, panel) {
-  const prefix = area === 'member' ? 'm' : 'a';
   const panelMap = {
     member: { overview:'m-overview', tasks:'m-tasks', leaderboard:'m-leaderboard', history:'m-history' },
-    admin:  { dashboard:'a-dashboard', members:'a-members', tasks:'a-tasks', adjust:'a-adjust' }
+    admin:  { dashboard:'a-dashboard', members:'a-members', tasks:'a-tasks', adjust:'a-adjust', review:'a-review' }
   };
   const areaEl = document.getElementById(area+'-area');
   areaEl.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
@@ -963,76 +1176,125 @@ function switchTab(area, panel) {
 }
 
 // ═══════════════════════════════
+//  TASK STATUS HELPERS
+// ═══════════════════════════════
+function getMemberTaskStatus(memberId, taskId) {
+  const done = state.history.some(h => h.memberId === memberId && h.taskId === taskId && h.type === 'earn');
+  if (done) return 'done';
+  const review = state.pendingApprovals.some(p => p.memberId === memberId && p.taskId === taskId);
+  if (review) return 'review';
+  return 'available';
+}
+
+function memberDoneTasks(memberId) {
+  return state.history
+    .filter(h => h.memberId === memberId && h.type === 'earn' && h.taskId)
+    .map(h => h.taskId);
+}
+
+// ═══════════════════════════════
 //  MEMBER RENDER
 // ═══════════════════════════════
 function renderMember() {
   const u = state.currentUser;
+  const member = state.members.find(m => m.id === u.id);
+  if (!member) return;
+
   const sorted = [...state.members].sort((a,b) => b.pts - a.pts);
   const rank = sorted.findIndex(m => m.id === u.id) + 1;
   const done = memberDoneTasks(u.id);
+  const now = new Date().toISOString().slice(0,7); // YYYY-MM
   const monthPts = state.history
-    .filter(h => h.memberId === u.id && h.type==='earn' && h.date >= '2026-05-01')
+    .filter(h => h.memberId === u.id && h.type==='earn' && h.date.startsWith(now))
     .reduce((s,h) => s+h.pts, 0);
+  const myPending = state.pendingApprovals.filter(p => p.memberId === u.id);
 
-  // levels
-  const levels = [200, 400, 600, 900, 1200];
-  const nextLevel = levels.find(l => l > u.pts) || '已達頂';
+  // Level
+  const lv = getLevelInfo(member.pts);
+  const nextPts = lv.next ? lv.next.min - member.pts : 0;
 
-  document.getElementById('m-pts').textContent = u.pts;
+  document.getElementById('m-pts').textContent = member.pts;
   document.getElementById('m-pts-sub').textContent = `共完成 ${done.length} 項任務`;
   document.getElementById('m-rank').textContent = '#' + rank;
   document.getElementById('m-done').textContent = done.length;
   document.getElementById('m-month').textContent = monthPts;
-  document.getElementById('m-next').textContent = typeof nextLevel === 'number' ? nextLevel - u.pts : '—';
+  document.getElementById('m-pending-count').textContent = myPending.length;
+  document.getElementById('m-next').textContent = lv.next ? nextPts : '—';
 
-  renderSuggestTasks(done);
-  renderTaskList(done);
+  // Level badge
+  const lvBadge = document.getElementById('m-level-badge');
+  lvBadge.textContent = lv.cur.icon + ' ' + lv.cur.name;
+  lvBadge.style.background = lv.cur.color + '22';
+  lvBadge.style.color = lv.cur.color;
+  document.getElementById('m-level-bar').style.width = lv.pct + '%';
+  document.getElementById('m-level-next').textContent = lv.next ? `距 ${lv.next.icon}${lv.next.name} 差 ${nextPts} 點` : '已達最高等級';
+
+  renderSuggestTasks(u.id);
+  renderTaskList(u.id);
   renderLb('m-lb-table', u.id);
   renderHistory(u.id);
   renderAdjMember();
 }
 
-function taskCard(t, done, clickable=true) {
-  const isDone = done.includes(t.id);
-  return `<div class="task-card" onclick="${clickable && !isDone ? `openCompleteTask('${t.id}')` : ''}">
-    <div class="task-icon ${t.color}">${t.icon}</div>
+function taskCard(t, memberId, suggest=false) {
+  const status = getMemberTaskStatus(memberId, t.id);
+  const colorClass = t.color === 'gold' ? 'gold' : t.color === 'teal' ? 'teal' : 'ruby';
+  const chipColor = colorClass;
+
+  let statusEl = '';
+  let clickable = '';
+  if (status === 'done') {
+    statusEl = `<span class="task-status done">✓ 完成</span>`;
+  } else if (status === 'review') {
+    statusEl = `<span class="task-status review">⏳ 審核中</span>`;
+  } else {
+    statusEl = `<span class="task-status pending" style="cursor:pointer" onclick="openApplyTask('${t.id}')">申請完成</span>`;
+    clickable = 'clickable';
+  }
+
+  return `<div class="task-card ${clickable}" ${status==='available' ? `onclick="openApplyTask('${t.id}')"` : ''}>
+    <div class="task-icon ${colorClass}">${t.icon}</div>
     <div class="task-info">
       <div class="task-name">${t.name}</div>
-      <div class="task-desc">${t.desc} · <span class="chip chip-${t.color === 'gold' ? 'gold' : t.color === 'teal' ? 'teal' : 'ruby'}">${t.cat}</span></div>
+      <div class="task-desc">${t.desc} · <span class="chip chip-${chipColor}">${t.cat}</span></div>
     </div>
     <div style="text-align:right;">
       <div class="task-pts">${t.pts}</div>
       <div class="task-pts-label">點</div>
     </div>
-    <span class="task-status ${isDone ? 'done' : 'pending'}">${isDone ? '✓ 完成' : '待完成'}</span>
+    ${statusEl}
   </div>`;
 }
 
-function renderSuggestTasks(done) {
-  const pending = state.tasks.filter(t => !done.includes(t.id)).slice(0,3);
-  document.getElementById('m-suggest-tasks').innerHTML = pending.map(t => taskCard(t, done)).join('') || '<div class="empty-state">所有任務已完成！</div>';
+function renderSuggestTasks(memberId) {
+  const pending = state.tasks.filter(t => getMemberTaskStatus(memberId, t.id) === 'available').slice(0,3);
+  document.getElementById('m-suggest-tasks').innerHTML =
+    pending.map(t => taskCard(t, memberId, true)).join('') ||
+    '<div class="empty-state">所有任務已完成或申請中！</div>';
 }
 
-function renderTaskList(done) {
-  document.getElementById('m-task-list').innerHTML = state.tasks.map(t => taskCard(t, done)).join('');
+function renderTaskList(memberId) {
+  document.getElementById('m-task-list').innerHTML =
+    state.tasks.map(t => taskCard(t, memberId)).join('');
 }
 
 function renderLb(elId, meId) {
   const sorted = [...state.members].sort((a,b) => b.pts - a.pts);
-  const max = sorted[0].pts || 1;
+  const max = sorted[0]?.pts || 1;
   const medals = ['🥇','🥈','🥉'];
-  const colors = ['#b8860b','#888','#cd7f32'];
+  const avatarColors = ['#7a4f1e','#1a4a7a','#2e3a4a','#0f6e72','#4a1b0c','#3c3489','#1e2235','#63181c'];
   document.getElementById(elId).innerHTML = sorted.map((m,i) => {
     const pct = Math.round(m.pts / max * 100);
+    const lv = getLevelInfo(m.pts);
     return `<div class="lb-row${m.id === meId ? ' me' : ''}">
       <div class="lb-rank${i<3?' top':''}">
         ${i<3 ? `<span class="medal">${medals[i]}</span>` : i+1}
       </div>
-      <div class="lb-avatar" style="background:${['#7a4f1e','#1a4a7a','#2e3a4a','#0f6e72','#4a1b0c','#3c3489','#1e2235','#63181c'][i%8]};">
-        ${m.name.slice(-2)}
-      </div>
-      <div class="lb-info" style="flex:1;">
-        <div class="lb-name">${m.name}${m.id===meId?' <span class="chip chip-gold">我</span>':''}</div>
+      <div class="lb-avatar" style="background:${avatarColors[i%8]};">${m.name.slice(-2)}</div>
+      <div style="flex:1;">
+        <div class="lb-name">${m.name}${m.id===meId?' <span class="chip chip-gold">我</span>':''}
+          <span style="font-size:11px;margin-left:6px;">${lv.cur.icon}</span>
+        </div>
         <div class="lb-dept">${m.dept} · ${m.title}</div>
       </div>
       <div class="lb-bar-wrap"><div class="lb-bar" style="width:${pct}%"></div></div>
@@ -1042,7 +1304,7 @@ function renderLb(elId, meId) {
 }
 
 function renderHistory(memberId) {
-  const hist = state.history.filter(h => h.memberId === memberId).reverse();
+  const hist = state.history.filter(h => h.memberId === memberId).slice().reverse();
   document.getElementById('m-hist-list').innerHTML = hist.map(h => {
     return `<div class="hist-row">
       <div class="hist-dot ${h.type}">${h.type==='earn' ? '＋' : '－'}</div>
@@ -1056,30 +1318,42 @@ function renderHistory(memberId) {
 }
 
 // ═══════════════════════════════
-//  COMPLETE TASK
+//  APPLY TASK (Member → Pending)
 // ═══════════════════════════════
-function openCompleteTask(taskId) {
+function openApplyTask(taskId) {
   const t = state.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  const status = getMemberTaskStatus(state.currentUser.id, taskId);
+  if (status !== 'available') return;
   state.pendingTaskId = taskId;
-  document.getElementById('ct-title').textContent = t.name;
-  document.getElementById('ct-sub').textContent = t.desc;
-  document.getElementById('ct-pts').textContent = t.pts;
-  openModal('complete-task');
+  document.getElementById('at-title').textContent = t.name;
+  document.getElementById('at-sub').textContent = t.desc;
+  document.getElementById('at-pts').textContent = t.pts;
+  document.getElementById('at-note').value = '';
+  openModal('apply-task');
 }
 
-function confirmCompleteTask() {
+function confirmApplyTask() {
   const t = state.tasks.find(x => x.id === state.pendingTaskId);
   const u = state.currentUser;
-  // add points
-  const member = state.members.find(m => m.id === u.id);
-  member.pts += t.pts;
-  state.currentUser.pts = member.pts;
-  state.history.push({
-    memberId: u.id, type:'earn', taskId: t.id, taskName: t.name,
-    pts: t.pts, date: new Date().toISOString().slice(0,10), note:''
+  const note = document.getElementById('at-note').value.trim();
+
+  state.pendingApprovals.push({
+    id: 'PA' + Date.now(),
+    memberId: u.id,
+    memberName: u.name,
+    memberDept: u.dept || '',
+    taskId: t.id,
+    taskName: t.name,
+    taskIcon: t.icon,
+    pts: t.pts,
+    note,
+    submittedAt: new Date().toISOString().slice(0,10),
   });
-  closeModal('complete-task');
-  toast(`✓ 完成「${t.name}」，獲得 ${t.pts} 點！`);
+
+  saveState();
+  closeModal('apply-task');
+  toast(`✓ 已送出「${t.name}」申請，等待人資審核`);
   renderMember();
 }
 
@@ -1098,17 +1372,27 @@ function renderAdmin() {
   renderMemberTable();
   renderTaskTable();
   renderAdjMember();
+  renderApprovalList();
+  updateReviewBadge();
+}
+
+function updateReviewBadge() {
+  const badge = document.getElementById('review-badge');
+  const cnt = state.pendingApprovals.length;
+  badge.textContent = cnt;
+  badge.style.display = cnt > 0 ? 'inline-flex' : 'none';
 }
 
 function renderMemberTable() {
   const sorted = [...state.members].sort((a,b) => b.pts - a.pts);
   document.getElementById('a-member-table').innerHTML = sorted.map(m => {
+    const lv = getLevelInfo(m.pts);
     return `<tr>
       <td><strong>${m.name}</strong></td>
       <td>${m.dept}</td>
       <td>${m.title}</td>
       <td><span class="pts-val">${m.pts}</span><span style="font-size:12px;color:var(--stone);"> 點</span></td>
-      <td><span class="chip chip-teal">啟用中</span></td>
+      <td><span style="font-size:13px;">${lv.cur.icon} ${lv.cur.name}</span></td>
       <td><button class="btn btn-outline btn-sm" onclick="deleteMember('${m.id}')">移除</button></td>
     </tr>`;
   }).join('');
@@ -1116,9 +1400,10 @@ function renderMemberTable() {
 
 function renderTaskTable() {
   document.getElementById('a-task-table').innerHTML = state.tasks.map(t => {
+    const cc = t.color==='gold'?'gold':t.color==='teal'?'teal':'ruby';
     return `<tr>
       <td><strong>${t.icon} ${t.name}</strong></td>
-      <td><span class="chip chip-${t.color==='gold'?'gold':t.color==='teal'?'teal':'ruby'}">${t.cat}</span></td>
+      <td><span class="chip chip-${cc}">${t.cat}</span></td>
       <td><span class="pts-val">${t.pts}</span><span style="font-size:12px;color:var(--stone);"> 點</span></td>
       <td style="color:var(--stone);font-size:13px;">${t.desc}</td>
       <td><button class="btn btn-ruby btn-sm" onclick="deleteTask('${t.id}')">刪除</button></td>
@@ -1132,31 +1417,109 @@ function renderAdjMember() {
   sel.innerHTML = state.members.map(m => `<option value="${m.id}">${m.name}（${m.dept}）</option>`).join('');
 }
 
+function renderApprovalList() {
+  const el = document.getElementById('a-approval-list');
+  if (!el) return;
+  if (!state.pendingApprovals.length) {
+    el.innerHTML = '<div class="empty-state">目前沒有待審核的申請 ✓</div>';
+    return;
+  }
+  el.innerHTML = state.pendingApprovals.map(p => `
+    <div class="approval-card">
+      <div class="ac-header">
+        <div class="ac-icon">${p.taskIcon}</div>
+        <div class="ac-info">
+          <div class="ac-name">${p.memberName} 申請完成「${p.taskName}」</div>
+          <div class="ac-meta">
+            <span class="chip chip-gold">+${p.pts} 點</span>
+            &nbsp;${p.memberDept}&nbsp;·&nbsp;${p.submittedAt}
+            ${p.note ? `&nbsp;·&nbsp;「${p.note}」` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="ac-actions">
+        <button class="btn btn-approve btn-sm" onclick="approveTask('${p.id}')">✓ 通過，積分入帳</button>
+        <button class="btn btn-reject btn-sm" onclick="rejectTask('${p.id}')">✗ 退回</button>
+      </div>
+    </div>
+  `).join('');
+}
+
 // ═══════════════════════════════
 //  ADMIN ACTIONS
 // ═══════════════════════════════
+function approveTask(approvalId) {
+  const approval = state.pendingApprovals.find(p => p.id === approvalId);
+  if (!approval) return;
+
+  const member = state.members.find(m => m.id === approval.memberId);
+  if (!member) return;
+
+  const prevPts = member.pts;
+  member.pts += approval.pts;
+
+  state.history.push({
+    memberId: approval.memberId,
+    type: 'earn',
+    taskId: approval.taskId,
+    taskName: approval.taskName,
+    pts: approval.pts,
+    date: new Date().toISOString().slice(0,10),
+    note: approval.note || '人資審核通過',
+  });
+
+  state.pendingApprovals = state.pendingApprovals.filter(p => p.id !== approvalId);
+  saveState();
+
+  // Check level up
+  const prevLv = getLevelInfo(prevPts);
+  const newLv = getLevelInfo(member.pts);
+  if (newLv.cur.name !== prevLv.cur.name) {
+    setTimeout(() => showMilestone(newLv.cur.icon, `${approval.memberName} 升級了！`, `恭喜晉升 ${newLv.cur.name}！`), 300);
+    spawnConfetti(60);
+  }
+
+  toast(`✓ 已批准 ${approval.memberName} 的申請，+${approval.pts} 點`);
+  renderAdmin();
+}
+
+function rejectTask(approvalId) {
+  const approval = state.pendingApprovals.find(p => p.id === approvalId);
+  if (!approval) return;
+  state.pendingApprovals = state.pendingApprovals.filter(p => p.id !== approvalId);
+  saveState();
+  toast(`已退回 ${approval.memberName} 的申請`);
+  renderAdmin();
+}
+
 function addMember() {
-  const name = document.getElementById('nm-name').value.trim();
-  const dept = document.getElementById('nm-dept').value.trim();
+  const name  = document.getElementById('nm-name').value.trim();
+  const dept  = document.getElementById('nm-dept').value.trim();
   const title = document.getElementById('nm-title').value.trim();
-  const id = document.getElementById('nm-id').value.trim();
-  if (!name || !id) { toast('請填寫必要欄位'); return; }
-  state.members.push({ id, name, dept, title, pts:0, active:true });
+  const id    = document.getElementById('nm-id').value.trim();
+  const pw    = document.getElementById('nm-pw').value.trim() || '1234';
+  if (!name || !id) { toast('請填寫姓名與員工編號'); return; }
+  if (state.members.find(m => m.id === id)) { toast('員工編號已存在'); return; }
+  state.members.push({ id, name, dept, title, pts:0, active:true, pw });
+  saveState();
   closeModal('add-member');
   toast(`✓ 已新增學員：${name}`);
   renderAdmin();
 }
 
 function deleteMember(id) {
+  if (!confirm('確定要移除此學員？')) return;
   state.members = state.members.filter(m => m.id !== id);
+  state.pendingApprovals = state.pendingApprovals.filter(p => p.memberId !== id);
+  saveState();
   renderAdmin();
   toast('已移除學員');
 }
 
 function addTask() {
   const name = document.getElementById('nt-name').value.trim();
-  const cat = document.getElementById('nt-cat').value;
-  const pts = parseInt(document.getElementById('nt-pts').value) || 20;
+  const cat  = document.getElementById('nt-cat').value;
+  const pts  = parseInt(document.getElementById('nt-pts').value) || 20;
   const desc = document.getElementById('nt-desc').value.trim();
   if (!name) { toast('請填寫任務名稱'); return; }
   const colorMap = { '課堂參與':'teal','作業繳交':'gold','實踐挑戰':'ruby','特殊貢獻':'ruby' };
@@ -1167,42 +1530,64 @@ function addTask() {
     color: colorMap[cat] || 'gold',
     icon: iconMap[cat] || '📌'
   });
+  saveState();
   closeModal('add-task');
   toast(`✓ 已新增任務：${name}`);
   renderAdmin();
 }
 
 function deleteTask(id) {
+  if (!confirm('確定要刪除此任務？')) return;
   state.tasks = state.tasks.filter(t => t.id !== id);
+  state.pendingApprovals = state.pendingApprovals.filter(p => p.taskId !== id);
+  saveState();
   renderAdmin();
   toast('已刪除任務');
 }
 
 function doAdjust() {
-  const mid = document.getElementById('adj-member').value;
+  const mid  = document.getElementById('adj-member').value;
   const type = document.getElementById('adj-type').value;
-  const pts = parseInt(document.getElementById('adj-pts').value) || 0;
+  const pts  = parseInt(document.getElementById('adj-pts').value) || 0;
   const note = document.getElementById('adj-note').value.trim();
   if (!pts || pts < 1) { toast('請輸入有效積分'); return; }
+
   const member = state.members.find(m => m.id === mid);
+  const prevPts = member.pts;
   if (type === 'earn') member.pts += pts;
   else member.pts = Math.max(0, member.pts - pts);
+
   state.history.push({
-    memberId: mid, type, taskId: null,
+    memberId: mid, type,
+    taskId: null,
     taskName: type==='earn' ? '人資手動加分' : '人資手動扣分',
     pts, date: new Date().toISOString().slice(0,10), note
   });
+
+  saveState();
+
+  // Check level up on manual earn
+  if (type === 'earn') {
+    const prevLv = getLevelInfo(prevPts);
+    const newLv  = getLevelInfo(member.pts);
+    if (newLv.cur.name !== prevLv.cur.name) {
+      setTimeout(() => showMilestone(newLv.cur.icon, `${member.name} 升級了！`, `恭喜晉升 ${newLv.cur.name}！`), 300);
+      spawnConfetti(60);
+    }
+  }
+
   toast(`✓ 已${type==='earn'?'新增':'扣除'}${member.name} ${pts} 點`);
   renderAdmin();
 }
 
 function exportCSV() {
   const sorted = [...state.members].sort((a,b) => b.pts - a.pts);
-  let csv = '排名,姓名,部門,職稱,積分\n';
+  let csv = '排名,姓名,部門,職稱,積分,等級\n';
   sorted.forEach((m,i) => {
-    csv += `${i+1},${m.name},${m.dept},${m.title},${m.pts}\n`;
+    const lv = getLevelInfo(m.pts);
+    csv += `${i+1},${m.name},${m.dept},${m.title},${m.pts},${lv.cur.name}\n`;
   });
-  const blob = new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8;' });
+  const blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = '積分報表_' + new Date().toISOString().slice(0,10) + '.csv';
@@ -1233,6 +1618,53 @@ function toast(msg) {
   t.textContent = msg; t.classList.add('show');
   clearTimeout(t._t);
   t._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ═══════════════════════════════
+//  ANIMATIONS
+// ═══════════════════════════════
+function spawnStars(x, y, count=8) {
+  const emojis = ['⭐','✨','🌟','💫','⚡'];
+  for (let i=0; i<count; i++) {
+    const el = document.createElement('div');
+    el.className = 'star-particle';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const angle = (i / count) * 360 + Math.random() * 20;
+    const dist  = 60 + Math.random() * 60;
+    el.style.setProperty('--tx', Math.cos(angle * Math.PI/180) * dist + 'px');
+    el.style.setProperty('--ty', Math.sin(angle * Math.PI/180) * dist - 40 + 'px');
+    el.style.setProperty('--dur', (.6 + Math.random() * .4) + 's');
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
+  }
+}
+
+function spawnConfetti(count=60) {
+  const colors = ['#b8860b','#e8b84b','#0f6e72','#1a4a7a','#8b1a2e','#22c55e'];
+  for (let i=0; i<count; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.top  = '-20px';
+    el.style.setProperty('--tx', (Math.random() - .5) * 200 + 'px');
+    el.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+    el.style.setProperty('--dur', (1 + Math.random() * 1) + 's');
+    el.style.animationDelay = Math.random() * .5 + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  }
+}
+
+function showMilestone(emoji, title, sub, duration=2800) {
+  document.getElementById('ms-emoji').textContent = emoji;
+  document.getElementById('ms-title').textContent = title;
+  document.getElementById('ms-sub').textContent   = sub;
+  const ov = document.getElementById('milestone-overlay');
+  ov.classList.add('show');
+  setTimeout(() => ov.classList.remove('show'), duration);
 }
 </script>
 </body>
