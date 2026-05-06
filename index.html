@@ -53,9 +53,12 @@ body {
 /* ── LOGIN ── */
 #login-screen {
   background: var(--ink);
-  display:flex; align-items:center; justify-content:center;
+  align-items:center; justify-content:center;
   min-height:100vh;
   position:relative; overflow:hidden;
+}
+#login-screen.active {
+  display:flex;
 }
 #login-screen::before {
   content:'';
@@ -1131,15 +1134,41 @@ function doLogin() {
     state.currentUser = { ...a, role:'admin' };
   }
 
-  document.getElementById('login-screen').classList.remove('active');
-  document.getElementById('app').style.display = 'flex';
-  initApp();
+  const loginEl = document.getElementById('login-screen');
+  const appEl   = document.getElementById('app');
+
+  loginEl.style.transition = 'opacity .25s';
+  loginEl.style.opacity = '0';
+  setTimeout(() => {
+    loginEl.classList.remove('active');
+    appEl.style.opacity = '0';
+    appEl.style.display = 'flex';
+    initApp();
+    requestAnimationFrame(() => {
+      appEl.style.transition = 'opacity .3s';
+      appEl.style.opacity = '1';
+    });
+  }, 250);
 }
 
 function logout() {
   state.currentUser = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').classList.add('active');
+  const appEl   = document.getElementById('app');
+  const loginEl = document.getElementById('login-screen');
+  appEl.style.transition = 'opacity .2s';
+  appEl.style.opacity = '0';
+  setTimeout(() => {
+    appEl.style.display = 'none';
+    appEl.style.opacity = '1';
+    appEl.style.transition = '';
+    loginEl.style.opacity = '0';
+    loginEl.classList.add('active');
+    requestAnimationFrame(() => {
+      loginEl.style.transition = 'opacity .25s';
+      loginEl.style.opacity = '1';
+      setTimeout(() => loginEl.style.transition = '', 300);
+    });
+  }, 200);
 }
 
 // ═══════════════════════════════
